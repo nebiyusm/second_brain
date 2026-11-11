@@ -1,0 +1,25 @@
+# Telegram
+python-telegram-bot>=21.4
+
+# Notion (pin <2.3.0: 2.3.0+ rewrote the client API and removed databases.query)
+notion-client>=2.2.1,<2.3.0
+
+# LLM (OpenAI-compatible: OpenAI, Groq, OpenRouter, Together, Ollama, ...)
+openai>=1.40.0
+
+# Config
+pydantic>=2.7.0
+pydantic-settings>=2.3.0
+python-dotenv>=1.0.1
+
+# Scheduling (daily digest)
+APScheduler>=3.10.4,<4.0
+
+# Video extraction
+yt-dlp>=2024.8.6
+
+# HTTP (used by ptb)
+httpx>=0.27.0
+
+# Optional: only required when TRANSCRIPTION_BACKEND=local
+faster-whisper>=1.0.3
