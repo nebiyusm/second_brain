@@ -226,6 +226,8 @@ async def _route(update: Update, context: ContextTypes.DEFAULT_TYPE, text: str) 
     elif itype == "TASK_FOR_BOT":
         from second_brain.handlers.executor import handle_instruction
         await handle_instruction(update, context, text)
+    elif itype == "UNKNOWN":
+        await _log_unhandled(update, context, text)
     else:
         await _chat_reply(update, context, text)
 
@@ -513,6 +515,42 @@ async def _status_callback(update: Update, context: ContextTypes.DEFAULT_TYPE, d
         notion: NotionClient = context.bot_data["notion"]
         await notion.update_page(task_id, {"Status": B.select_prop(status)})
         await q.edit_message_text(f"✅ Status set to {status}.")
+
+
+# --------------------------------------------------------------------------- #
+# Unhandled message log
+# --------------------------------------------------------------------------- #
+def _chunks(text: str, size: int = 1900) -> list[str]:
+    """Split text into Notion-safe rich_text chunks (2000-char limit per block)."""
+    return [text[i : i + size] for i in range(0, len(text), size)] or [""]
+
+
+async def _log_unhandled(update: Update, context: ContextTypes.DEFAULT_TYPE, text: str) -> None:
+    """Save a message the bot couldn't route into Tasks for later review."""
+    title = f"❓ Unhandled: {_short_title(text, 50)}"
+    props = {
+        "Name": B.title_prop(title),
+        "Status": B.select_prop("To do"),
+        "Notes": B.rich_text_prop(_chunks(text)[0]),
+    }
+    sections = [
+        ("Raw message", _chunks(text)),
+        ("What to do", "Review this message, tell the bot how to handle messages like it, then mark this task Done."),
+    ]
+    children = B.build_content_children(_tldr(text), sections)
+
+    page, err = await _create_or_queue(
+        context, TASKS, props, children, B.emoji_icon("❓"),
+        f"Logged unhandled message: {title}", update.effective_user.id,
+    )
+    if page:
+        await _confirm(
+            update, context,
+            "🤷 I didn't understand that — saved it to your Tasks. Review it there and tell me what to do with messages like it.",
+            page,
+        )
+    else:
+        await _reply(update, context, f"🤷 Didn't understand that, and saving it failed — queued for /retry. ({err})")
 
 
 # --------------------------------------------------------------------------- #

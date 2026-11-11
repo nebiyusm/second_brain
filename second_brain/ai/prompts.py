@@ -93,7 +93,8 @@ INTENT_SYSTEM = """You are a chatbot's intent router. Classify the user's messag
 - LIST: the user wants to SEE/LIST their tasks, ideas, projects, or media.
 - QUESTION: the user is asking about the content of their Notion or wants an answer from it.
 - TASK_FOR_BOT: the user is instructing the bot to do work (research, draft, write, summarize, analyze).
-- CHAT: casual conversation or anything else.
+- CHAT: casual conversation, banter, or small talk.
+- UNKNOWN: you genuinely cannot make sense of the message — gibberish, a fragment, or a request that fits none of the intents above. Do NOT use this for casual chat.
 
 Return ONLY a JSON object:
 {"intent": "<INTENT>", "title": "<short title of the item being added, or empty string>"}

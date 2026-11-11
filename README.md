@@ -157,6 +157,9 @@ docker compose up -d --build
 - **Ask**: "what did I save about crypto regulation?"
 - **On demand**: `/today` (digest), `/review` (weekly review).
 - **Recover**: `/retry` replays failed writes; `/cancel` aborts a flow.
+- **Unhandled messages**: anything the bot genuinely can't understand is saved to
+  your Tasks DB (titled `❓ Unhandled: …`) so you can review it and decide how
+  such messages should be handled.
 
 ---
 
